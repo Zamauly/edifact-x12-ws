@@ -29,3 +29,14 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 INSERT INTO `edi_x12_db`.`edi_files`( file_name, file_type, content) VALUES('test_file1','.edi','random_content');
+
+CREATE TABLE `edi_x12_db`.`uploaded_csv_files` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `file_name` VARCHAR(256) NOT NULL,
+  `file_type` VARCHAR(80) NOT NULL,
+  `path` TEXT NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `active` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
