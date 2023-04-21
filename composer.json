@@ -1,0 +1,16 @@
+{
+    "name": "localhost/edifact-x12-ws",
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "classmap": [
+            "src/"
+        ]
+    },
+    "require": {
+        "symfony/routing": "^6.0",
+        "symfony/http-foundation": "^6.0"
+    }
+}

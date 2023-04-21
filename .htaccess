@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+# rewrite css files to their actual path
+RewriteRule ^css/(.+\.css)$ resources/styles/$1 [L,NC]
+
+# rewrite js files to their actual path
+RewriteRule ^js/(.+\.js)$ resources/scripts/$1 [L,NC]
+
+# redirect /index.php to /
+RewriteRule ^$ public/ [L]
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.php
+RewriteRule ^public/index.php/?(.*)$ $1 [R=301,L]
+
+# process all requests through index.php, except for actually existing files
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ public/index.php/$1?%{QUERY_STRING} [QSA,L]
+
+
+</IfModule>
