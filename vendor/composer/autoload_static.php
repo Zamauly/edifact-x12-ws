@@ -7,16 +7,37 @@ namespace Composer\Autoload;
 class ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7
 {
     public static $files = array (
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\Routing\\' => 26,
             'Symfony\\Component\\HttpFoundation\\' => 33,
+        ),
+        'P' => 
+        array (
+            'Psr\\SimpleCache\\' => 16,
+            'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
+            'PhpOffice\\PhpSpreadsheet\\' => 25,
+        ),
+        'M' => 
+        array (
+            'MyCLabs\\Enum\\' => 13,
+            'Matrix\\' => 7,
+        ),
+        'C' => 
+        array (
+            'Complex\\' => 8,
         ),
         'A' => 
         array (
@@ -25,6 +46,10 @@ class ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7
     );
 
     public static $prefixDirsPsr4 = array (
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -37,22 +62,65 @@ class ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'PhpOffice\\PhpSpreadsheet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
+        'MyCLabs\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
+        ),
+        'Matrix\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
+        ),
+        'Complex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'H' => 
+        array (
+            'HTMLPurifier' => 
+            array (
+                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'App\\Config\\DbConfig' => __DIR__ . '/../..' . '/src/Config/DbConfig.php',
         'App\\Config\\Router' => __DIR__ . '/../..' . '/src/Config/RouterConfig.php',
+        'App\\Controllers\\EdiFileController' => __DIR__ . '/../..' . '/src/Controllers/EdiFileController.php',
         'App\\Controllers\\LoginController' => __DIR__ . '/../..' . '/src/Controllers/LoginController.php',
         'App\\Interfaces\\ControllerInterface' => __DIR__ . '/../..' . '/src/Interfaces/ControllerInterface.php',
         'App\\Interfaces\\ModelInterface' => __DIR__ . '/../..' . '/src/Interfaces/ModelInterface.php',
+        'App\\Models\\CsvModel' => __DIR__ . '/../..' . '/src/Models/CsvModel.php',
         'App\\Models\\FileModel' => __DIR__ . '/../..' . '/src/Models/FileModel.php',
         'App\\Models\\LoginModel' => __DIR__ . '/../..' . '/src/Models/LoginModel.php',
         'App\\Models\\UserModel' => __DIR__ . '/../..' . '/src/Models/UserModel.php',
+        'App\\Routes\\WebRoutes' => __DIR__ . '/../..' . '/src/Routes/WebRoutes.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -60,6 +128,7 @@ class ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitb65769d7762af33d99515c7eb2d08ca7::$classMap;
 
         }, null, ClassLoader::class);

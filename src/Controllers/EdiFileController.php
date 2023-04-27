@@ -4,6 +4,9 @@ namespace App\Controllers;
 use App\Models\FileModel;
 use App\Models\CsvModel;
 use App\Interfaces\ControllerInterface;
+use App\Utils\TablesUtil;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 
 class EdiFileController implements ControllerInterface{
     public $model;
@@ -31,10 +34,11 @@ class EdiFileController implements ControllerInterface{
         
         if(isset($_POST["submit-csv-file"])&&isset($_FILES["csvToUpload"])&& $_FILES["csvToUpload"]["error"] == 0){
 
-            $allowedFileTypes = array("csv" => "text/csv","tsv" => "text/tsv");
+            $allowedFileTypes = array("csv" => "text/csv","tsv" => "text/tsv", "xlsx"=>"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             $fileName  = basename($_FILES["csvToUpload"]["name"]);
-            $targetPath = $this->targetDir."/csv/".$fileName;
+            $targetPath = $this->targetDir."/worksheet/".$fileName;
             $fileType = $_FILES["csvToUpload"]["type"];
+            //var_dump(time()." File type: ".$fileType);
 
             if(in_array($fileType, $allowedFileTypes)){
                 // Check whether file exists before uploading it
@@ -44,11 +48,95 @@ class EdiFileController implements ControllerInterface{
                 }
                 else {
                     $data = 1;
-                    if (($handle = fopen($_FILES["csvToUpload"]["tmp_name"], "r")) !== FALSE) {
-                        $columns = [];
-                        $rows = [];
+                    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+
+                    if (($spreadsheet = $reader->load($_FILES["csvToUpload"]["tmp_name"])) !== FALSE) {
+                        echo "<br /> Could Open file: ".$fileName." <br />";
+                        //var_dump($spreadsheet);
+                        echo $spreadsheet->getSheetCount();
                         $i = 0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                        $csvModel = new CsvModel();
+                        $csvModel->setFileName($fileName);
+                        $csvModel->setFileType($fileType);
+                        $csvModel->setPath(explode("..", $targetPath)[1]);
+                        //var_dump($spreadsheet->getSheetNames());
+                        $sheetsList = $spreadsheet->getSheetNames();
+                        $columnsSheet = "column_references";
+                        if($indexColumnsSheet = array_search($columnsSheet, $sheetsList, true)){
+                            echo "<br /> create tables by columns {$indexColumnsSheet}<br />";
+                            $sheetToProcess = $spreadsheet->getSheetByName($sheetsList[$indexColumnsSheet])->toArray();
+                            $dataToCreateTables = [];
+                            $colummnsToCreateTables = [];
+                            $currentTable = "";
+                            foreach ($sheetToProcess as $currentElement => $elementValue) {
+/*                                 echo "<br /> currentElement: ";
+                                var_dump($currentElement);
+                                echo "<br /> elementValue: ";
+                                var_dump($elementValue); */
+                                
+                                if($currentElement>0){
+                                    if($currentElement === 1)
+                                        $currentTable = strtolower($elementValue[1]);
+                                        //$dataToCreateTables[$currentTable];
+                                    else if($currentElement > 1 && $currentTable!=="" && strcmp($currentTable,strtolower($elementValue[1]))!==0)
+                                        $currentTable = strtolower($elementValue[1]);
+                                    
+                                    //echo "<br /> currentTable: <br />";var_dump($currentTable);
+                                    unset($elementValue[1]);
+
+                                    if(!isset($dataToCreateTables[$currentTable]))
+                                        $dataToCreateTables[$currentTable] = [];
+                                    
+                                    array_push($dataToCreateTables[$currentTable],$elementValue);
+                                } else{
+                                    unset($elementValue[1]);
+                                    $colummnsToCreateTables = $elementValue;
+                                    //echo "<br /> Columns: <br />";var_dump($colummnsToCreateTables);
+                                }
+                                    
+                                    
+                                    //array_push($rows,$elementValue);
+                            }
+                            //echo "<br /> Data: <br />";var_dump($dataToCreateTables);
+                            foreach($dataToCreateTables as $currentData => $dataValues){
+/*                                 echo "<br /> currentData: ";
+                                var_dump($currentData); */
+
+                                $tablesUtil = new TablesUtil();
+                                $tablesUtil->especifyTabDeclare($currentData,$dataValues);
+
+/*                                 echo "<br /> dataValues: ";
+                                var_dump($dataValues); */
+
+                            }
+                            unset($sheetsList[$indexColumnsSheet]);
+                        }
+/*                         foreach ($sheetsList as $sheetKey => $sheetName) {
+                            # code...
+                            $columns = [];
+                            $rows = [];
+                            echo "<br /> sheetKey: ";
+                            var_dump($sheetKey);
+                            echo "<br /> sheetName: ";
+                            var_dump($sheetName);
+                            $currentSheet = $spreadsheet->getSheet($sheetKey)->toArray();
+                            //unset($sheetData[0]);
+                            foreach ($currentSheet as $currentElement => $elementValue) {
+                                # code...
+                                echo "<br /> currentElement: ";
+                                var_dump($currentElement);
+                                echo "<br /> elementValue: ";
+                                var_dump($elementValue);
+                                if($currentElement === 0)
+                                    $columns = $elementValue;
+                                else                                     
+                                    array_push($rows,$elementValue);
+                                
+                            }
+                            $data = [ "columnsToTab" => $columns, "rowsToTab" => $rows];
+                            $csvModel->createDataStructure($data,$sheetName);
+                        } */
+/*                         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                             $num = count($data);
                             //echo "<p> $num fields in line: <br /></p>\n";
                             $row = [];
@@ -66,18 +154,12 @@ class EdiFileController implements ControllerInterface{
                                 array_push($rows,$row);
                             }
                             $i += 1;
-                        }
-                        $csvModel = new CsvModel();
-                        $csvModel->setFileName($fileName);
-                        $csvModel->setFileType($fileType);
-                        $csvModel->setPath(explode("..", $targetPath)[1]);
-                        $data = [ "columnsToTab" => $columns, "rowsToTab" => $rows];
-                        $csvModel->createDataStructure($data);
+                        } */
                         
-                        fclose($handle);
+                        //fclose($handle);
                     }
-                    if(move_uploaded_file($_FILES["csvToUpload"]["tmp_name"], $targetPath)) echo "Se guardo correctamente. ";
-                    else echo "No se puede guardar el archivo. ";
+/*                     if(move_uploaded_file($_FILES["csvToUpload"]["tmp_name"], $targetPath)) echo "Se guardo correctamente. ";
+                    else echo "No se puede guardar el archivo. "; */
                 }
             }
             //If not a valid MIME type

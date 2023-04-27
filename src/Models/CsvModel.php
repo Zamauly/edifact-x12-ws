@@ -134,6 +134,9 @@ class CsvModel implements ModelInterface
                     $totalRowColumns = count($row);
                     foreach($row as $valueToInsert){
                         ++$j;
+                        if(str_contains($valueToInsert,"'"))
+                            $valueToInsert = str_replace("'","\"",$valueToInsert);
+
                         if($j === 1)
                             $addingRows .= "('".$valueToInsert."',";
                         else if($j === $totalRowColumns)
@@ -149,24 +152,27 @@ class CsvModel implements ModelInterface
                 $queryInsertTab = "INSERT INTO `".DB_NAME."`.`".$tableName."_catalogue` "
                     .$columnsToInsert
                     ." VALUES ".$addingRows;
-                //var_dump("info: [ ".date("Y-m-d H:i:s")." ] query to create table: ".$queryInsertTab);
+                var_dump("info: [ ".date("Y-m-d H:i:s")." ] query to create table: ".$queryInsertTab);
                 $result = mysqli_query($link, $queryInsertTab);
                 if($result)
                     echo "Se han insertado correctamente en la tabla: {$tableName} => {$totalRows} filas";
-                else 
-                    echo "Error. Imposible insertar en la tabla: {$tableName}";
+                else {
+                    echo "<br /> Error. Imposible insertar en la tabla: {$tableName} <br />";
+                    var_dump(mysqli_error($link));
+                    echo "<br />";
+                }
 
             }
         }
     }
     // CRUD OPERATIONS
-    public function createDataStructure(array $data = [])
+    public function createDataStructure(array $data = [],string $sheetName = "")
     {
         //var_dump("info: [ ".date("Y-m-d H:i:s")." ] create Data: \n",$data);
         try{
             $this->dbConfig = new DbConfig();
             $link = $this->dbConfig->openConnect();
-            $tableName = strtolower(substr($this->fileName,0,strlen($this->fileName)-4));
+            $tableName = strtolower($sheetName);
             $queryValidateTab = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '".DB_NAME."' AND table_name = '".$tableName."_catalogue'";
 
             var_dump("info: [ ".date("Y-m-d H:i:s")." ] validate table if exists: ".$queryValidateTab);

@@ -8,11 +8,15 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Config\\DbConfig' => $baseDir . '/src/Config/DbConfig.php',
     'App\\Config\\Router' => $baseDir . '/src/Config/RouterConfig.php',
+    'App\\Controllers\\EdiFileController' => $baseDir . '/src/Controllers/EdiFileController.php',
     'App\\Controllers\\LoginController' => $baseDir . '/src/Controllers/LoginController.php',
     'App\\Interfaces\\ControllerInterface' => $baseDir . '/src/Interfaces/ControllerInterface.php',
     'App\\Interfaces\\ModelInterface' => $baseDir . '/src/Interfaces/ModelInterface.php',
+    'App\\Models\\CsvModel' => $baseDir . '/src/Models/CsvModel.php',
     'App\\Models\\FileModel' => $baseDir . '/src/Models/FileModel.php',
     'App\\Models\\LoginModel' => $baseDir . '/src/Models/LoginModel.php',
     'App\\Models\\UserModel' => $baseDir . '/src/Models/UserModel.php',
+    'App\\Routes\\WebRoutes' => $baseDir . '/src/Routes/WebRoutes.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Stringable' => $vendorDir . '/myclabs/php-enum/stubs/Stringable.php',
 );

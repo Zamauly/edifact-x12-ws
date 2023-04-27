@@ -1,0 +1,33 @@
+{
+    "number" : 850,
+    "name" : "Purchase Order",
+    "type" : "x12",
+    "description" : "This X12 Transaction Set contains the format and establishes the data contents of the Purchase Order Transaction Set (850) for use within the context of an Electronic Data Interchange (EDI) environment. The transaction set can be used to provide for customary and established business and industry practice relative to the placement of purchase orders for goods and services. This transaction set should not be used to convey purchase order changes or purchase order acknowledgment information.",
+    "segments" : {
+        "ST" : {
+            "name" : "",
+            "elements" : {
+                "01" : {
+                    "element" : 143,
+                    "name" : "Transaction Set Identifier Code",
+                    "type" : "ID",
+                    "requirement" : "Mandatory",
+                    "min" : 3,
+                    "max" : 3,
+                    "repeat" : 1,
+                    "codes" : true
+                },
+                "02" : {
+                    "element" : 143,
+                    "name" : "",
+                    "type" : "",
+                    "requirement" : "",
+                    "min" : 3,
+                    "max" : 3,
+                    "repeat" : 1,
+                    "codes" : false
+                }
+            }
+        }
+    }
+}
