@@ -16,6 +16,8 @@ class EdiFileController implements ControllerInterface{
     public $currentEnsembleLine;
     public $currentEnsembleColumn;
     public $ensembleLevels;
+    public array $columnReferencesStandartFields = ["table_field", "sheet_field", "type", "length", "is_primary", "unique_primary",	"is_foreign", "sheet_ref", "sheet_field_ref", "unique_foreign", "not_null", "is_index"];
+    public array $columnReferencesPermitEmpty = ["is_index"];
     public $currentEnsembleRow = [ "rept"=>0,"reiterate" => true,"numSegments" => 0,"segments" => [0=>["level"=>0,"parentLevel"=>0,"content"=>"comntemnt","rept"=>0,"reiterate"=>true,"numSegments"=>0,"segments"=>[]]]];
     public $currenEnsambledEdi = array();
 
@@ -75,11 +77,12 @@ class EdiFileController implements ControllerInterface{
                                 var_dump($elementValue); */
                                 
                                 if($currentElement>0){
+                                    $processedDataTable = strtolower($elementValue[1]);
                                     if($currentElement === 1)
-                                        $currentTable = strtolower($elementValue[1]);
+                                        $currentTable = $processedDataTable;
                                         //$dataToCreateTables[$currentTable];
-                                    else if($currentElement > 1 && $currentTable!=="" && strcmp($currentTable,strtolower($elementValue[1]))!==0)
-                                        $currentTable = strtolower($elementValue[1]);
+                                    else if($currentElement > 1 && $currentTable!=="" && strcmp($currentTable,$processedDataTable)!==0)
+                                        $currentTable = $processedDataTable;
                                     
                                     //echo "<br /> currentTable: <br />";var_dump($currentTable);
                                     unset($elementValue[1]);
@@ -89,8 +92,32 @@ class EdiFileController implements ControllerInterface{
                                     
                                     array_push($dataToCreateTables[$currentTable],$elementValue);
                                 } else{
+                                    $fieldsErrors = "";
+                                    $fieldsErrorsToStop = false;
+                                    foreach($elementValue as $key => $fieldColumnToEval){
+                                        $fieldColumnToEval = strtolower($fieldColumnToEval);
+                                        if(!in_array($fieldColumnToEval, $this->columnReferencesStandartFields)){
+
+                                            if(!in_array($fieldColumnToEval,$this->columnReferencesPermitEmpty))
+                                                $fieldsErrorsToStop = true;
+                                            
+                                            $fieldsErrors .= " Error. Missing element {($key+1)} named: {$fieldColumnToEval} <br /> ";
+
+                                        }
+
+                                    }
+                                    
+                                    if($fieldsErrors !== ""){
+                                        echo " <br />  Must to check your '{$columnsSheet}' sheet at next fields <br /> {$fieldsErrors}";
+                                        if($fieldsErrorsToStop){
+                                            echo " <br /> Stop Process. Required fields are missing!! <br />";
+                                            return;
+                                        }
+                                            
+                                    }
+                                    
                                     unset($elementValue[1]);
-                                    $colummnsToCreateTables = $elementValue;
+                                    //$colummnsToCreateTables = $elementValue;
                                     //echo "<br /> Columns: <br />";var_dump($colummnsToCreateTables);
                                 }
                                     
@@ -98,17 +125,36 @@ class EdiFileController implements ControllerInterface{
                                     //array_push($rows,$elementValue);
                             }
                             //echo "<br /> Data: <br />";var_dump($dataToCreateTables);
+                            $tablesUtil = new TablesUtil();
+                            $foreignKeysSentences = [];
+                            $indexKeysSentences = [];
                             foreach($dataToCreateTables as $currentData => $dataValues){
-/*                                 echo "<br /> currentData: ";
-                                var_dump($currentData); */
 
-                                $tablesUtil = new TablesUtil();
-                                $tablesUtil->especifyTabDeclare($currentData,$dataValues);
 
-/*                                 echo "<br /> dataValues: ";
-                                var_dump($dataValues); */
+                                $querysToDefineTab = $tablesUtil->especifyTabDeclare($currentData,$dataValues);
+
+                                echo "<br /> Query To create table: {$querysToDefineTab["createSentence"]} <br />";
+                                $csvModel->executeSentence($querysToDefineTab["createSentence"], null);
+
+                                if(count($querysToDefineTab["indexSentences"])>0)
+                                    foreach($querysToDefineTab["indexSentences"] as $indexSentence){
+                                        echo "<br /> Query To alter table with index: {$indexSentence} <br />";
+                                        $csvModel->executeSentence($indexSentence, null);
+
+                                    }
+                                
+                                if(count($querysToDefineTab["foreignSentences"])>0)
+                                    foreach($querysToDefineTab["foreignSentences"] as $foreignSentence)
+                                        array_push($foreignKeysSentences,$foreignSentence);
+
 
                             }
+                            foreach($foreignKeysSentences as $foreignSentence){
+                                echo "<br /> Query To alter table with foreign: {$foreignSentence} <br />";
+                                $csvModel->executeSentence($foreignSentence, null);
+
+                            }
+
                             unset($sheetsList[$indexColumnsSheet]);
                         }
 /*                         foreach ($sheetsList as $sheetKey => $sheetName) {
