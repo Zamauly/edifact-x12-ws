@@ -1,4 +1,4 @@
-# NJ-A001-SiteMinderWS
+# # Edifact-X12-WS
 this is a API REST to serve LDAP request 
 
 ###### Its a simulation for LDAP at linux servers only for academy porpouses.
