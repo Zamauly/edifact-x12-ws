@@ -112,14 +112,44 @@ class CsvModel implements ModelInterface
                     ."`active` BOOLEAN DEFAULT TRUE,"
                     ."PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8";
                 //var_dump("info: [ ".date("Y-m-d H:i:s")." ] query to create table: ".$queryCreateTab);
-                $result = mysqli_query($link, $queryCreateTab);
-                if($result)
-                    echo "Se ha creado correctamente la tabla: {$tableName}";
-                else 
-                    echo "Error. Imposible crear la tabla: {$tableName}";
+                $this->executeSentence($queryCreateTab, $link);
             }
         }
         return $columnsToInsert;
+    }
+
+    public function executeSentence(string $sentece = "", mixed $link) : bool {
+        if($sentece==="")
+            return false;
+
+        if($link === null||empty($link)){
+            $this->dbConfig = new DbConfig();
+            $link = $this->dbConfig->openConnect();
+            $toCloseConnect = true;
+        }
+
+        $result = mysqli_query($link, $sentece);
+        $out = false;
+        if($result){
+            echo "<br />  Sentence executed correctly: {$sentece} <br /> ";
+            $out = $result;
+
+        } else {
+            echo "<br /> Error. Can't executed sentence: {$sentece} <br />";
+            var_dump(mysqli_error($link));
+            echo "<br />";
+
+        }
+        
+        //$result->free();
+        if(!is_bool($result))
+            mysqli_free_result($result);
+            
+        if(isset($toCloseConnect))
+            if($toCloseConnect)
+                $this->dbConfig->closeConnect($link);
+        
+        return $out;
     }
 
     public function insertIfItsNecesary(array $data, string $columnsToInsert, string $tableName, mysqli $link ) : void {

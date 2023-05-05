@@ -23,7 +23,7 @@ class WebRoutes {
         if(empty($user) && $user === null)
             $this->routes->add('login', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'LoginController', 'method'=>'invoke'), array()));
         else
-            $this->routes->add('homepage', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'EdiFileController', 'method'=>'invoke'), array()));
+            $this->routes->add('homepage', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'FileController', 'method'=>'invoke'), array()));
         
         
         return $this->routes;
