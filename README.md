@@ -1,7 +1,7 @@
 # # Edifact-X12-WS
-this is a API REST to serve LDAP request 
+this is a WebService to Process edifact/x12 data sources
 
-###### Its a simulation for LDAP at linux servers only for academy porpouses.
+###### Its a process core to work with edifact/x12 files format only for academy porpouses.
 
 ### This project was generated with
 -[Php](https://www.php.net/) 8.0.28
